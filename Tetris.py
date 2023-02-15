@@ -153,11 +153,7 @@ class Application(tk.Frame):
             for i in range(GAME_HEIGHT * GAME_WIDTH)
         ]
 
-    def move_left(
-        self,
-        dx,
-        dy,
-    ):
+    def move_left(self,dx,dy,):
         self.game.move_tetromino(dx, dy)
         self.update_game()
 
