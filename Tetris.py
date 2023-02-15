@@ -132,6 +132,7 @@ class Application(tk.Frame):
         self.canvas.bind("<Right>", lambda _: self.move_right(1, 0))
         self.canvas.bind("<Down>", lambda _: self.move_down(0, 1))
         self.canvas.bind("<Up>", lambda _: self.rotate())
+        self.canvas.bind("<space>", lambda _: self.hard_drop(0,1))
 
     def draw_game(self):
         self.canvas = tk.Canvas(
@@ -163,6 +164,14 @@ class Application(tk.Frame):
 
     def move_down(self, dx, dy):
         self.game.move_tetromino(dx, dy)
+        self.update_game()
+
+    def hard_drop(self, x, y):
+        if self.game.is_block_free(x, y) == True:
+            self.game.move_tetromino(0,1)
+            self.hard_drop(x, y)
+        else:
+            return 
         self.update_game()
 
     def clock(self):
