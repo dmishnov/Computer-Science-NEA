@@ -113,8 +113,10 @@ class Game:
                 self.current_coord[0] + dx,
                 self.current_coord[1] + dy,
             ]
+            return True
         elif dx == 0 and dy == 1:
             self.set_colour()
+            return False
 
     def rotate(self):
         self.rotation_id = (self.rotation_id + 1) % 4
@@ -168,11 +170,8 @@ class Application(tk.Frame):
         self.update_game()
 
     def hard_drop(self, x, y):
-        if self.game.is_block_free(x, y) == True:
-            self.game.move_tetromino(0, 1)
-            self.hard_drop(x, y)
-        else:
-            return
+        while self.game.move_tetromino(0, 1):
+            pass
         self.update_game()
 
     def clock(self):
