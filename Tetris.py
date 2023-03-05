@@ -86,7 +86,9 @@ class Game:
     def set_colour(self):
         for x, y in self.get_tetromino_coords():
             self.grid[y][x] = self.piece_colour
-
+        new_grid = [row for row in self.grid if any(tile == 0 for tile in row)]
+        lines_eliminated = len(self.grid) - len(new_grid)
+        self.grid = [[0]*GAME_WIDTH for x in range(lines_eliminated)] + new_grid
         self.make_tetromino()
 
     def is_block_free(self, x, y):
