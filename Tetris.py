@@ -2,10 +2,9 @@ import tkinter as tk
 import random
 
 GAME_WIDTH = 10
-GAME_HEIGHT = 26
+GAME_HEIGHT = 22
 
-BLOCK_SIZE = 30
-
+BLOCK_SIZE = 30  
 COLOURS = [
     "#000000",  # black
     "#f66d9b",  # pink
@@ -69,6 +68,9 @@ class Game:
     def __init__(self):
         self.grid = [[0 for x in range(GAME_WIDTH)] for y in range(GAME_HEIGHT)]
         self.make_tetromino()
+        self.total_score = 0
+        self.total_lines_eliminated = 0
+        self.score_multiplier = [0,40,100,300,1200]
 
     def make_tetromino(self):
         self.piece_colour = random.randint(1, len(COLOURS) - 1)
@@ -88,6 +90,9 @@ class Game:
             self.grid[y][x] = self.piece_colour
         new_grid = [row for row in self.grid if any(tile == 0 for tile in row)]
         lines_eliminated = len(self.grid) - len(new_grid)
+        score = self.score_multiplier[lines_eliminated]
+        self.total_score += score
+        self.total_lines_eliminated += lines_eliminated
         self.grid = [[0] * GAME_WIDTH for x in range(lines_eliminated)] + new_grid
         self.make_tetromino()
 
@@ -142,9 +147,9 @@ class Application(tk.Frame):
     def draw_game(self):
         self.canvas = tk.Canvas(
             self,
-            width=GAME_WIDTH * BLOCK_SIZE,
-            height=GAME_HEIGHT * BLOCK_SIZE,
-            bg=COLOURS[0],
+            width=(GAME_WIDTH * BLOCK_SIZE) + 300,
+            height= GAME_HEIGHT * BLOCK_SIZE,
+            bg="grey",
         )
         self.canvas.focus_set()
         self.canvas.pack(side="left")
@@ -158,6 +163,18 @@ class Application(tk.Frame):
             )
             for i in range(GAME_HEIGHT * GAME_WIDTH)
         ]
+        self.gui_score = self.canvas.create_text(
+            400,
+            10,
+            text=("Score = " + str(self.game.total_score)),
+            fill="white",
+            font = "Helvetica 10")
+        self.gui_lines_eliminated = self.canvas.create_text(
+            400,
+            30,
+            text=("Lines eliminated = " + str(self.game.total_lines_eliminated)),
+            fill="white",
+            font = "Helvetica 10")
 
     def move_left(self, dx, dy):
         self.game.move_tetromino(dx, dy)
@@ -188,6 +205,8 @@ class Application(tk.Frame):
         for i in range(len(self.rectangles)):
             colour_num = self.game.get_colour(i % (GAME_WIDTH), i // GAME_WIDTH)
             self.canvas.itemconfig(self.rectangles[i], fill=COLOURS[colour_num])
+        self.canvas.itemconfig(self.gui_lines_eliminated, text=("Lines eliminated = " + str(self.game.total_lines_eliminated)))
+        self.canvas.itemconfig(self.gui_score, text=("Score = " + str(self.game.total_score)))
 
 
 root = tk.Tk()
