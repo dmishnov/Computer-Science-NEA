@@ -4,7 +4,7 @@ import random
 GAME_WIDTH = 10
 GAME_HEIGHT = 22
 
-BLOCK_SIZE = 30  
+BLOCK_SIZE = 30
 COLOURS = [
     "#000000",  # black
     "#f66d9b",  # pink
@@ -70,7 +70,7 @@ class Game:
         self.make_tetromino()
         self.total_score = 0
         self.total_lines_eliminated = 0
-        self.score_multiplier = [0,40,100,300,1200]
+        self.score_multiplier = [0, 40, 100, 300, 1200]
 
     def make_tetromino(self):
         self.piece_colour = random.randint(1, len(COLOURS) - 1)
@@ -148,7 +148,7 @@ class Application(tk.Frame):
         self.canvas = tk.Canvas(
             self,
             width=(GAME_WIDTH * BLOCK_SIZE) + 300,
-            height= GAME_HEIGHT * BLOCK_SIZE,
+            height=GAME_HEIGHT * BLOCK_SIZE,
             bg="grey",
         )
         self.canvas.focus_set()
@@ -168,13 +168,15 @@ class Application(tk.Frame):
             10,
             text=("Score = " + str(self.game.total_score)),
             fill="white",
-            font = "Helvetica 10")
+            font="Helvetica 10",
+        )
         self.gui_lines_eliminated = self.canvas.create_text(
             400,
             30,
             text=("Lines eliminated = " + str(self.game.total_lines_eliminated)),
             fill="white",
-            font = "Helvetica 10")
+            font="Helvetica 10",
+        )
 
     def move_left(self, dx, dy):
         self.game.move_tetromino(dx, dy)
@@ -205,8 +207,13 @@ class Application(tk.Frame):
         for i in range(len(self.rectangles)):
             colour_num = self.game.get_colour(i % (GAME_WIDTH), i // GAME_WIDTH)
             self.canvas.itemconfig(self.rectangles[i], fill=COLOURS[colour_num])
-        self.canvas.itemconfig(self.gui_lines_eliminated, text=("Lines eliminated = " + str(self.game.total_lines_eliminated)))
-        self.canvas.itemconfig(self.gui_score, text=("Score = " + str(self.game.total_score)))
+        self.canvas.itemconfig(
+            self.gui_lines_eliminated,
+            text=("Lines eliminated = " + str(self.game.total_lines_eliminated)),
+        )
+        self.canvas.itemconfig(
+            self.gui_score, text=("Score = " + str(self.game.total_score))
+        )
 
 
 root = tk.Tk()
