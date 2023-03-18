@@ -127,8 +127,12 @@ class Game:
             self.set_colour()
             return False
 
-    def rotate(self):
+    def rotate_clockwise(self):
         self.rotation_id = (self.rotation_id + 1) % 4
+        self.tetromino = TETROMINOS[self.tetromino_id][self.rotation_id]
+
+    def rotate_anticlockwise(self):
+        self.rotation_id = (self.rotation_id - 1) % 4
         self.tetromino = TETROMINOS[self.tetromino_id][self.rotation_id]
 
 
@@ -143,7 +147,9 @@ class Application(tk.Frame):
         self.canvas.bind("<Left>", lambda _: self.move_left(-1, 0))
         self.canvas.bind("<Right>", lambda _: self.move_right(1, 0))
         self.canvas.bind("<Down>", lambda _: self.move_down(0, 1))
-        self.canvas.bind("<Up>", lambda _: self.rotate())
+        self.canvas.bind("<Up>", lambda _: self.rotate_clockwise())
+        self.canvas.bind("<x>", lambda _: self.rotate_clockwise())
+        self.canvas.bind("<z>", lambda _: self.rotate_anticlockwise())
         self.canvas.bind("<space>", lambda _: self.hard_drop(0, 1))
 
     def draw_game(self):
@@ -209,8 +215,12 @@ class Application(tk.Frame):
         self.move_down(0, 1)
         self.canvas.after(int(1000 * (0.66 ** (self.game.game_level))), self.clock)
 
-    def rotate(self):
-        self.game.rotate()
+    def rotate_clockwise(self):
+        self.game.rotate_clockwise()
+        self.update_game()
+    
+    def rotate_anticlockwise(self):
+        self.game.rotate_anticlockwise()
         self.update_game()
 
     def update_game(self):
