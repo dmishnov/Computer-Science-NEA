@@ -124,6 +124,7 @@ class Game:
             ]
             return True
         elif dx == 0 and dy == 1:
+            self.set_colour()
             return False
 
     def rotate(self):
