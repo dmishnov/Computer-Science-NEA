@@ -63,6 +63,7 @@ TETROMINOS = [
     ],
 ]
 
+
 class Game:
     def __init__(self):
         self.grid = [[0 for x in range(GAME_WIDTH)] for y in range(GAME_HEIGHT)]
@@ -167,7 +168,7 @@ class Application(tk.Frame):
                 (i // GAME_WIDTH) * BLOCK_SIZE,
                 ((i % GAME_WIDTH) + 1) * BLOCK_SIZE,
                 ((i // GAME_WIDTH) + 1) * BLOCK_SIZE,
-                outline=''
+                outline="",
             )
             for i in range(GAME_HEIGHT * GAME_WIDTH)
         ]
@@ -185,7 +186,6 @@ class Application(tk.Frame):
             text=("LINES ELIMINATED = " + str(self.game.total_lines_eliminated)),
             fill="white",
             font="Helvetica 20 bold",
-
         )
         self.gui_game_level = self.canvas.create_text(
             450,
@@ -219,7 +219,7 @@ class Application(tk.Frame):
     def rotate_clockwise(self):
         self.game.rotate_clockwise()
         self.update_game()
-    
+
     def rotate_anticlockwise(self):
         self.game.rotate_anticlockwise()
         self.update_game()
