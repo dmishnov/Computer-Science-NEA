@@ -70,6 +70,7 @@ class Game:
         self.make_tetromino()
         self.total_score = 0
         self.total_lines_eliminated = 0
+        self.game_level = 0
         self.score_multiplier = [0, 40, 100, 300, 1200]
 
     def make_tetromino(self):
@@ -93,6 +94,7 @@ class Game:
         score = self.score_multiplier[lines_eliminated]
         self.total_score += score
         self.total_lines_eliminated += lines_eliminated
+        self.game_level = self.total_lines_eliminated // 10
         self.grid = [[0] * GAME_WIDTH for x in range(lines_eliminated)] + new_grid
         self.make_tetromino()
 
@@ -122,7 +124,6 @@ class Game:
             ]
             return True
         elif dx == 0 and dy == 1:
-            self.set_colour()
             return False
 
     def rotate(self):
@@ -149,7 +150,7 @@ class Application(tk.Frame):
             self,
             width=(GAME_WIDTH * BLOCK_SIZE) + 300,
             height=GAME_HEIGHT * BLOCK_SIZE,
-            bg="grey",
+            bg=COLOURS[0],
         )
         self.canvas.focus_set()
         self.canvas.pack(side="left")
@@ -163,19 +164,27 @@ class Application(tk.Frame):
             )
             for i in range(GAME_HEIGHT * GAME_WIDTH)
         ]
+        self.canvas.create_line(300, 0, 300, 665, fill="white", width=1)
         self.gui_score = self.canvas.create_text(
-            400,
-            10,
+            450,
+            30,
             text=("Score = " + str(self.game.total_score)),
             fill="white",
-            font="Helvetica 10",
+            font="Helvetica 15",
         )
         self.gui_lines_eliminated = self.canvas.create_text(
-            400,
-            30,
+            450,
+            60,
             text=("Lines eliminated = " + str(self.game.total_lines_eliminated)),
             fill="white",
-            font="Helvetica 10",
+            font="Helvetica 15",
+        )
+        self.gui_game_level = self.canvas.create_text(
+            450,
+            90,
+            text=("Level = " + str(self.game.game_level)),
+            fill="white",
+            font="Helvetica 15",
         )
 
     def move_left(self, dx, dy):
@@ -197,7 +206,7 @@ class Application(tk.Frame):
 
     def clock(self):
         self.move_down(0, 1)
-        self.canvas.after(1000, self.clock)
+        self.canvas.after(int(1000 * (0.66 ** (self.game.game_level))), self.clock)
 
     def rotate(self):
         self.game.rotate()
@@ -213,6 +222,9 @@ class Application(tk.Frame):
         )
         self.canvas.itemconfig(
             self.gui_score, text=("Score = " + str(self.game.total_score))
+        )
+        self.canvas.itemconfig(
+            self.gui_game_level, text=("Level = " + str(self.game.game_level))
         )
 
 
