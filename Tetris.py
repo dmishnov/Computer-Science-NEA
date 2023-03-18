@@ -63,7 +63,6 @@ TETROMINOS = [
     ],
 ]
 
-
 class Game:
     def __init__(self):
         self.grid = [[0 for x in range(GAME_WIDTH)] for y in range(GAME_HEIGHT)]
@@ -168,6 +167,7 @@ class Application(tk.Frame):
                 (i // GAME_WIDTH) * BLOCK_SIZE,
                 ((i % GAME_WIDTH) + 1) * BLOCK_SIZE,
                 ((i // GAME_WIDTH) + 1) * BLOCK_SIZE,
+                outline=''
             )
             for i in range(GAME_HEIGHT * GAME_WIDTH)
         ]
@@ -175,23 +175,24 @@ class Application(tk.Frame):
         self.gui_score = self.canvas.create_text(
             450,
             30,
-            text=("Score = " + str(self.game.total_score)),
+            text=("SCORE = " + str(self.game.total_score)),
             fill="white",
-            font="Helvetica 15",
+            font="Helvetica 20 bold",
         )
         self.gui_lines_eliminated = self.canvas.create_text(
             450,
             60,
-            text=("Lines eliminated = " + str(self.game.total_lines_eliminated)),
+            text=("LINES ELIMINATED = " + str(self.game.total_lines_eliminated)),
             fill="white",
-            font="Helvetica 15",
+            font="Helvetica 20 bold",
+
         )
         self.gui_game_level = self.canvas.create_text(
             450,
             90,
-            text=("Level = " + str(self.game.game_level)),
+            text=("LEVEL = " + str(self.game.game_level)),
             fill="white",
-            font="Helvetica 15",
+            font="Helvetica 20 bold",
         )
 
     def move_left(self, dx, dy):
@@ -229,13 +230,13 @@ class Application(tk.Frame):
             self.canvas.itemconfig(self.rectangles[i], fill=COLOURS[colour_num])
         self.canvas.itemconfig(
             self.gui_lines_eliminated,
-            text=("Lines eliminated = " + str(self.game.total_lines_eliminated)),
+            text=("LINES ELIMINATED = " + str(self.game.total_lines_eliminated)),
         )
         self.canvas.itemconfig(
-            self.gui_score, text=("Score = " + str(self.game.total_score))
+            self.gui_score, text=("SCORE = " + str(self.game.total_score))
         )
         self.canvas.itemconfig(
-            self.gui_game_level, text=("Level = " + str(self.game.game_level))
+            self.gui_game_level, text=("LEVEL = " + str(self.game.game_level))
         )
 
 
