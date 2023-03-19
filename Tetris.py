@@ -85,8 +85,8 @@ class Game:
         global UNGRABBED_BAG
         if len(UNGRABBED_BAG) == 0:
             UNGRABBED_BAG = [0, 1, 2, 3, 4, 5, 6]
-        pop_value1 = random.randint(0, len(UNGRABBED_BAG) - 1)
-        TETROMINOID_LIST.append(UNGRABBED_BAG.pop(pop_value1))
+        pop_value = random.randint(0, len(UNGRABBED_BAG) - 1)
+        TETROMINOID_LIST.append(UNGRABBED_BAG.pop(pop_value))
         self.tetromino_id = TETROMINOID_LIST[0]
 
     def choose_colour(self):
