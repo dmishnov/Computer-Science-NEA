@@ -63,6 +63,8 @@ TETROMINOS = [
     ],
 ]
 
+UNGRABBED_BAG = [0, 1, 2, 3, 4, 5, 6]
+
 
 class Game:
     def __init__(self):
@@ -73,10 +75,17 @@ class Game:
         self.game_level = 0
         self.score_multiplier = [0, 40, 100, 300, 1200]
 
+    def choose_piece(self):
+        global UNGRABBED_BAG
+        if len(UNGRABBED_BAG) == 0:
+            UNGRABBED_BAG = [0, 1, 2, 3, 4, 5, 6]
+        pop_value = random.randint(0, len(UNGRABBED_BAG) - 1)
+        self.tetromino_id = UNGRABBED_BAG.pop(pop_value)
+
     def make_tetromino(self):
         self.piece_colour = random.randint(1, len(COLOURS) - 1)
         self.current_coord = [GAME_WIDTH // 2, 0]
-        self.tetromino_id = random.randint(0, len(TETROMINOS) - 1)
+        self.choose_piece()
         self.rotation_id = 0
         self.tetromino = TETROMINOS[self.tetromino_id][self.rotation_id]
 
@@ -172,7 +181,21 @@ class Application(tk.Frame):
             )
             for i in range(GAME_HEIGHT * GAME_WIDTH)
         ]
-        self.canvas.create_line(300, 0, 300, 665, fill="white", width=1)
+        # self.next_piece_rectangle_border = self.canvas.create_rectangle(391, 180, 511, 300, outline='white')
+        self.next_piece_grid = [
+            self.canvas.create_rectangle(
+                391 + (i % 4) * BLOCK_SIZE,
+                180 + (i // 4) * BLOCK_SIZE,
+                391 + ((i % 4) + 1) * BLOCK_SIZE,
+                180 + ((i // 4) + 1) * BLOCK_SIZE,
+                fill="gray",
+                # outline=""
+            )
+            for i in range(16)
+        ]
+        line1 = self.canvas.create_line(300, 0, 300, 665, fill="white", width=1)
+        line2 = self.canvas.create_line(300, 120, 600, 120, fill="white", width=1)
+        line3 = self.canvas.create_line(300, 330, 600, 330, fill="white", width=1)
         self.gui_score = self.canvas.create_text(
             450,
             30,
@@ -194,6 +217,29 @@ class Application(tk.Frame):
             fill="white",
             font="Helvetica 20 bold",
         )
+        self.gui_next_piece = self.canvas.create_text(
+            450,
+            150,
+            text=("NEXT PIECE"),
+            fill="white",
+            font="Helvetica 20 bold",
+        )
+        """
+        self.gui_how_to_play = self.canvas.create_text(
+            450,
+            360,
+            text=("KEYBINDS"),
+            fill="white",
+            font="Helvetica 20 bold",
+        )
+        self.gui_how_to_play1 = self.canvas.create_text(
+            450,
+            460,
+            text=("• Left = move left\n• Right = move right\n• Down = move down\n• Up = rotate 90° clockwise\n• X = rotate 90° clockwise\n• Z = rotate 90° counterclockwise\n• Space = hard drop"),
+            fill="white",
+            font="Helvetica 18",
+        )
+        """
 
     def move_left(self, dx, dy):
         self.game.move_tetromino(dx, dy)
@@ -228,6 +274,12 @@ class Application(tk.Frame):
         for i in range(len(self.rectangles)):
             colour_num = self.game.get_colour(i % (GAME_WIDTH), i // GAME_WIDTH)
             self.canvas.itemconfig(self.rectangles[i], fill=COLOURS[colour_num])
+
+        for i in range(len(self.next_piece_grid)):
+            self.canvas.itemconfig(
+                self.next_piece_grid[i], fill=COLOURS[self.game.piece_colour]
+            )
+
         self.canvas.itemconfig(
             self.gui_lines_eliminated,
             text=("LINES ELIMINATED = " + str(self.game.total_lines_eliminated)),
