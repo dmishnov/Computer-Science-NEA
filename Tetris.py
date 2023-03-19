@@ -2,7 +2,7 @@ import tkinter as tk
 import random
 
 GAME_WIDTH = 10
-GAME_HEIGHT = 22
+GAME_HEIGHT = 24
 
 BLOCK_SIZE = 30
 COLOURS = [
@@ -222,7 +222,7 @@ class Application(tk.Frame):
             )
             for i in range(16)
         ]
-        line1 = self.canvas.create_line(300, 0, 300, 665, fill="white", width=1)
+        line1 = self.canvas.create_line(300, 0, 300, 725, fill="white", width=1)
         line2 = self.canvas.create_line(300, 120, 600, 120, fill="white", width=1)
         line3 = self.canvas.create_line(300, 330, 600, 330, fill="white", width=1)
         self.gui_score = self.canvas.create_text(
