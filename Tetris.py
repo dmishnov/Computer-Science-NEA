@@ -26,74 +26,103 @@ TETROMINOS = [
         [(0, 0), (0, 1), (1, 0), (1, 1)],  # O
     ],
     [
-        [(0, -1), (0, 0), (0, 1), (1, 1)],  # L
-        [(0, 0), (-1, 1), (-1, 0), (1, 0)],  # L first turn
-        [(0, 0), (-1, -1), (0, -1), (0, 1)],  # L second turn
-        [(0, 0), (-1, 0), (1, 0), (1, -1)],  # L third turn
+        [(1, 0), (1, 1), (1, 2), (2, 2)],  # L
+        [(1, 1), (0, 2), (0, 1), (2, 1)],  # L first turn
+        [(1, 1), (0, 0), (1, 0), (1, 2)],  # L second turn
+        [(1, 1), (0, 1), (2, 1), (2, 0)],  # L third turn
     ],
     [
-        [(-1, 1), (0, 1), (0, 0), (0, -1)],  # J
-        [(-1, -1), (-1, 0), (0, 0), (1, 0)],  # J first turn
-        [(0, -1), (1, -1), (0, 0), (0, 1)],  # J second turn
-        [(-1, 0), (0, 0), (1, 0), (1, 1)],  # J third turn
+        [(0, 2), (1, 2), (1, 1), (1, 0)],  # J
+        [(0, 0), (0, 1), (1, 1), (2, 1)],  # J first turn
+        [(1, 0), (2, 0), (1, 1), (1, 2)],  # J second turn
+        [(0, 1), (1, 1), (2, 1), (2, 2)],  # J third turn
     ],
     [
-        [(-1, 0), (0, 0), (1, 0), (0, 1)],  # T
-        [(0, -1), (0, 0), (0, 1), (-1, 0)],  # T first turn
-        [(-1, 0), (0, 0), (0, -1), (1, 0)],  # T second turn
-        [(0, -1), (0, 0), (0, 1), (1, 0)],  # T third turn
+        [(0, 1), (1, 1), (2, 1), (1, 2)],  # T
+        [(1, 0), (1, 1), (1, 2), (0, 1)],  # T first turn
+        [(0, 1), (1, 1), (1, 0), (2, 1)],  # T second turn
+        [(1, 0), (1, 1), (1, 2), (2, 1)],  # T third turn
     ],
     [
-        [(0, 0), (0, -1), (0, 1), (0, 2)],  # I
-        [(0, 0), (-1, 0), (1, 0), (2, 0)],  # I first turn
-        [(0, 0), (0, -1), (0, 1), (0, 2)],  # I second turn
-        [(0, 0), (-1, 0), (1, 0), (2, 0)],  # I third turn
+        [(1, 1), (1, 0), (1, 2), (1, 3)],  # I
+        [(1, 1), (0, 1), (2, 1), (3, 1)],  # I first turn
+        [(1, 1), (1, 0), (1, 2), (1, 3)],  # I second turn
+        [(1, 1), (0, 1), (2, 1), (3, 1)],  # I third turn
     ],
     [
-        [(0, 0), (0, -1), (-1, 0), (1, -1)],  # S
-        [(-1, -1), (-1, 0), (0, 0), (0, 1)],  # S first turn
-        [(0, 0), (0, -1), (-1, 0), (1, -1)],  # S second turn
-        [(-1, -1), (-1, 0), (0, 0), (0, 1)],  # S third turn
+        [(1, 1), (1, 0), (0, 1), (2, 0)],  # S
+        [(0, 0), (0, 1), (1, 1), (1, 2)],  # S first turn
+        [(1, 1), (1, 0), (0, 1), (2, 0)],  # S second turn
+        [(0, 0), (0, 1), (1, 1), (1, 2)],  # S third turn
     ],
     [
-        [(-1, -1), (0, -1), (0, 0), (1, 0)],  # Z
-        [(0, 0), (-1, 0), (0, -1), (-1, 1)],  # Z first turn
-        [(-1, -1), (0, -1), (0, 0), (1, 0)],  # Z second turn
-        [(0, 0), (-1, 0), (0, -1), (-1, 1)],  # Z third turn
+        [(0, 0), (1, 0), (1, 1), (2, 1)],  # Z
+        [(1, 1), (0, 1), (1, 0), (0, 2)],  # Z first turn
+        [(0, 0), (1, 0), (1, 1), (2, 1)],  # Z second turn
+        [(1, 1), (0, 1), (1, 0), (0, 2)],  # Z third turn
     ],
 ]
 
 UNGRABBED_BAG = [0, 1, 2, 3, 4, 5, 6]
+TETROMINOID_LIST = [0]
+COLOURID_LIST = [0]
 
 
 class Game:
     def __init__(self):
         self.grid = [[0 for x in range(GAME_WIDTH)] for y in range(GAME_HEIGHT)]
+        self.next_tetromino_grid = [[0 for c in range(4)] for r in range(4)]
+        self.choose_piece()
+        self.choose_colour()
         self.make_tetromino()
         self.total_score = 0
         self.total_lines_eliminated = 0
         self.game_level = 0
         self.score_multiplier = [0, 40, 100, 300, 1200]
+        self.next_tetromino_offset = [0, 0]
 
     def choose_piece(self):
         global UNGRABBED_BAG
         if len(UNGRABBED_BAG) == 0:
             UNGRABBED_BAG = [0, 1, 2, 3, 4, 5, 6]
-        pop_value = random.randint(0, len(UNGRABBED_BAG) - 1)
-        self.tetromino_id = UNGRABBED_BAG.pop(pop_value)
+        pop_value1 = random.randint(0, len(UNGRABBED_BAG) - 1)
+        TETROMINOID_LIST.append(UNGRABBED_BAG.pop(pop_value1))
+        self.tetromino_id = TETROMINOID_LIST[0]
+
+    def choose_colour(self):
+        self.piece_colour_rand = random.randint(1, len(COLOURS) - 1)
+        COLOURID_LIST.append(self.piece_colour_rand)
+        self.piece_colour = COLOURID_LIST[0]
+        self.next_tetromino_colour = COLOURID_LIST[1]
 
     def make_tetromino(self):
-        self.piece_colour = random.randint(1, len(COLOURS) - 1)
+        COLOURID_LIST.remove(COLOURID_LIST[0])
+        self.choose_colour()
         self.current_coord = [GAME_WIDTH // 2, 0]
+        TETROMINOID_LIST.remove(TETROMINOID_LIST[0])
         self.choose_piece()
         self.rotation_id = 0
         self.tetromino = TETROMINOS[self.tetromino_id][self.rotation_id]
+        self.next_tetromino = TETROMINOS[TETROMINOID_LIST[1]][0]
+
+    def get_next_tetromino_coords(self):
+        return [
+            (r + self.next_tetromino_offset[0], c + self.next_tetromino_offset[1])
+            for r, c in self.next_tetromino
+        ]
 
     def get_tetromino_coords(self):
         return [
             (x + self.current_coord[0], y + self.current_coord[1])
             for x, y in self.tetromino
         ]
+
+    def get_next_tetromino_colour(self, r, c):
+        return (
+            self.next_tetromino_colour
+            if (c, r) in self.get_next_tetromino_coords()
+            else self.next_tetromino_grid[c][r]
+        )
 
     def set_colour(self):
         for x, y in self.get_tetromino_coords():
@@ -181,15 +210,15 @@ class Application(tk.Frame):
             )
             for i in range(GAME_HEIGHT * GAME_WIDTH)
         ]
-        # self.next_piece_rectangle_border = self.canvas.create_rectangle(391, 180, 511, 300, outline='white')
+        # self.next_piece_rectangle_border = self.canvas.create_rectangle(390, 179, 511, 300, outline='white')
         self.next_piece_grid = [
             self.canvas.create_rectangle(
                 391 + (i % 4) * BLOCK_SIZE,
                 180 + (i // 4) * BLOCK_SIZE,
                 391 + ((i % 4) + 1) * BLOCK_SIZE,
                 180 + ((i // 4) + 1) * BLOCK_SIZE,
-                fill="gray",
-                # outline=""
+                fill="",
+                outline="",
             )
             for i in range(16)
         ]
@@ -272,13 +301,12 @@ class Application(tk.Frame):
 
     def update_game(self):
         for i in range(len(self.rectangles)):
-            colour_num = self.game.get_colour(i % (GAME_WIDTH), i // GAME_WIDTH)
-            self.canvas.itemconfig(self.rectangles[i], fill=COLOURS[colour_num])
+            colour_num1 = self.game.get_colour(i % (GAME_WIDTH), i // GAME_WIDTH)
+            self.canvas.itemconfig(self.rectangles[i], fill=COLOURS[colour_num1])
 
-        for i in range(len(self.next_piece_grid)):
-            self.canvas.itemconfig(
-                self.next_piece_grid[i], fill=COLOURS[self.game.piece_colour]
-            )
+        for i, _id in enumerate(self.next_piece_grid):
+            colour_num2 = self.game.get_next_tetromino_colour((i // 4), (i % 4))
+            self.canvas.itemconfig(_id, fill=COLOURS[colour_num2])
 
         self.canvas.itemconfig(
             self.gui_lines_eliminated,
