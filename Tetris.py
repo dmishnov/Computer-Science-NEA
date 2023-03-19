@@ -70,6 +70,7 @@ COLOURID_LIST = [0]
 
 class Game:
     def __init__(self):
+        self.game_over = False
         self.grid = [[0 for x in range(GAME_WIDTH)] for y in range(GAME_HEIGHT)]
         self.next_tetromino_grid = [[0 for c in range(4)] for r in range(4)]
         self.choose_piece()
@@ -98,12 +99,13 @@ class Game:
     def make_tetromino(self):
         COLOURID_LIST.remove(COLOURID_LIST[0])
         self.choose_colour()
-        self.current_coord = [GAME_WIDTH // 2, 0]
+        self.current_coord = [(GAME_WIDTH // 2) - 1, 0]
         TETROMINOID_LIST.remove(TETROMINOID_LIST[0])
         self.choose_piece()
         self.rotation_id = 0
         self.tetromino = TETROMINOS[self.tetromino_id][self.rotation_id]
         self.next_tetromino = TETROMINOS[TETROMINOID_LIST[1]][0]
+        self.game_over = any(not self.is_block_free(x, y) for (x, y) in self.get_tetromino_coords())
 
     def get_next_tetromino_coords(self):
         return [
@@ -143,6 +145,10 @@ class Game:
             return False
         if self.grid[y][x] != 0:
             return False
+        
+        if self.game_over:
+            return
+
 
         return True
 
@@ -153,6 +159,9 @@ class Game:
             return self.grid[y][x]
 
     def move_tetromino(self, dx, dy):
+        if self.game_over:
+            return
+
         if all(
             self.is_block_free(x + dx, y + dy) for x, y in self.get_tetromino_coords()
         ):
@@ -162,14 +171,22 @@ class Game:
             ]
             return True
         elif dx == 0 and dy == 1:
-            self.set_colour()
+            self.game_over = any(y < 1 for (x, y) in self.get_tetromino_coords())
+            if not self.game_over:
+                self.set_colour()
             return False
 
     def rotate_clockwise(self):
+        if self.game_over:
+            return
+        
         self.rotation_id = (self.rotation_id + 1) % 4
         self.tetromino = TETROMINOS[self.tetromino_id][self.rotation_id]
 
     def rotate_anticlockwise(self):
+        if self.game_over:
+            return
+        
         self.rotation_id = (self.rotation_id - 1) % 4
         self.tetromino = TETROMINOS[self.tetromino_id][self.rotation_id]
 
@@ -210,6 +227,7 @@ class Application(tk.Frame):
             )
             for i in range(GAME_HEIGHT * GAME_WIDTH)
         ]
+        self.game_over_screen = self.canvas.create_rectangle(0, 0, 600, 720, fill="")
         # self.next_piece_rectangle_border = self.canvas.create_rectangle(390, 179, 511, 300, outline='white')
         self.next_piece_grid = [
             self.canvas.create_rectangle(
@@ -253,22 +271,29 @@ class Application(tk.Frame):
             fill="white",
             font="Helvetica 20 bold",
         )
-        """
-        self.gui_how_to_play = self.canvas.create_text(
-            450,
-            360,
-            text=("KEYBINDS"),
+        
+        self.gui_game_over = self.canvas.create_text(
+            300,
+            330,
+            text=(""),
             fill="white",
-            font="Helvetica 20 bold",
+            font="Helvetica 50 bold",
         )
-        self.gui_how_to_play1 = self.canvas.create_text(
-            450,
-            460,
-            text=("• Left = move left\n• Right = move right\n• Down = move down\n• Up = rotate 90° clockwise\n• X = rotate 90° clockwise\n• Z = rotate 90° counterclockwise\n• Space = hard drop"),
+
+        self.gui_game_over_stats_title = self.canvas.create_text(
+            300,
+            390,
+            text=(""),
             fill="white",
-            font="Helvetica 18",
+            font="Helvetica 25 underline",
         )
-        """
+        self.gui_game_over_stats = self.canvas.create_text(
+            300,
+            450,
+            text=(""),
+            fill="white",
+            font="Helvetica 20",
+        )
 
     def move_left(self, dx, dy):
         self.game.move_tetromino(dx, dy)
@@ -318,6 +343,16 @@ class Application(tk.Frame):
         self.canvas.itemconfig(
             self.gui_game_level, text=("LEVEL = " + str(self.game.game_level))
         )
+        if self.game.game_over:
+            self.canvas.itemconfig(self.game_over_screen, fill="black")
+            self.canvas.tag_raise(self.game_over_screen)
+            self.canvas.itemconfig(self.gui_game_over, text=("GAME OVER"))
+            self.canvas.tag_raise(self.gui_game_over)
+            self.canvas.itemconfig(self.gui_game_over_stats_title, text=("GAME STATS"))
+            self.canvas.tag_raise(self.gui_game_over_stats_title)
+            self.canvas.itemconfig(self.gui_game_over_stats, text=("SCORE = " + str(self.game.total_score) + "\nLINES ELIMINATED = " + str(self.game.total_lines_eliminated) + "\nLEVEL REACHED = " + str(self.game.game_level)))
+            self.canvas.tag_raise(self.gui_game_over_stats)
+
 
 
 root = tk.Tk()
