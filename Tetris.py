@@ -105,7 +105,9 @@ class Game:
         self.rotation_id = 0
         self.tetromino = TETROMINOS[self.tetromino_id][self.rotation_id]
         self.next_tetromino = TETROMINOS[TETROMINOID_LIST[1]][0]
-        self.game_over = any(not self.is_block_free(x, y) for (x, y) in self.get_tetromino_coords())
+        self.game_over = any(
+            not self.is_block_free(x, y) for (x, y) in self.get_tetromino_coords()
+        )
 
     def get_next_tetromino_coords(self):
         return [
@@ -145,10 +147,9 @@ class Game:
             return False
         if self.grid[y][x] != 0:
             return False
-        
+
         if self.game_over:
             return
-
 
         return True
 
@@ -179,14 +180,14 @@ class Game:
     def rotate_clockwise(self):
         if self.game_over:
             return
-        
+
         self.rotation_id = (self.rotation_id + 1) % 4
         self.tetromino = TETROMINOS[self.tetromino_id][self.rotation_id]
 
     def rotate_anticlockwise(self):
         if self.game_over:
             return
-        
+
         self.rotation_id = (self.rotation_id - 1) % 4
         self.tetromino = TETROMINOS[self.tetromino_id][self.rotation_id]
 
@@ -271,7 +272,7 @@ class Application(tk.Frame):
             fill="white",
             font="Helvetica 20 bold",
         )
-        
+
         self.gui_game_over = self.canvas.create_text(
             300,
             330,
@@ -350,9 +351,18 @@ class Application(tk.Frame):
             self.canvas.tag_raise(self.gui_game_over)
             self.canvas.itemconfig(self.gui_game_over_stats_title, text=("GAME STATS"))
             self.canvas.tag_raise(self.gui_game_over_stats_title)
-            self.canvas.itemconfig(self.gui_game_over_stats, text=("SCORE = " + str(self.game.total_score) + "\nLINES ELIMINATED = " + str(self.game.total_lines_eliminated) + "\nLEVEL REACHED = " + str(self.game.game_level)))
+            self.canvas.itemconfig(
+                self.gui_game_over_stats,
+                text=(
+                    "SCORE = "
+                    + str(self.game.total_score)
+                    + "\nLINES ELIMINATED = "
+                    + str(self.game.total_lines_eliminated)
+                    + "\nLEVEL REACHED = "
+                    + str(self.game.game_level)
+                ),
+            )
             self.canvas.tag_raise(self.gui_game_over_stats)
-
 
 
 root = tk.Tk()
